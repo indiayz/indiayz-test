@@ -1,23 +1,21 @@
 import os
 import telebot
-from indiayz import wiki, media
+
+from indiayz.wiki import wiki
+from indiayz.media import download as media
+
 
 # ======================
 # CONFIG
 # ======================
-BOT_TOKEN = os.getenv("BOT_TOKEN")  # Heroku config var
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 bot = telebot.TeleBot(BOT_TOKEN, parse_mode="HTML")
 
 
 # ======================
-# SAFE RESPONSE HANDLER
+# SAFE RESPONSE
 # ======================
 def safe_text(res):
-    """
-    indiayz kabhi dict return karta hai
-    kabhi string
-    ye function dono ko safely handle karega
-    """
     if isinstance(res, dict):
         if res.get("success") is False:
             return res.get("error", "Unknown error")
@@ -26,36 +24,38 @@ def safe_text(res):
 
 
 # ======================
-# COMMANDS
+# START / HELP
 # ======================
 @bot.message_handler(commands=["start", "help"])
 def start(m):
     bot.reply_to(
         m,
         "👋 <b>Nia Bot</b>\n\n"
-        "📘 <b>/wiki topic</b> – Wikipedia search\n"
-        "🎬 <b>Media link bhejo</b> – video download info\n\n"
+        "📘 <b>/wiki topic</b>\n"
+        "🎬 <b>Media link bhejo</b>\n\n"
         "Example:\n"
-        "<code>/wiki usa</code>\n"
+        "<code>/wiki india</code>\n"
         "<code>https://youtube.com/...</code>"
     )
 
 
+# ======================
+# WIKI
+# ======================
 @bot.message_handler(commands=["wiki"])
 def wiki_cmd(m):
     query = m.text.replace("/wiki", "").strip()
 
     if not query:
-        bot.reply_to(m, "❌ Topic likho\nExample: <code>/wiki india</code>")
+        bot.reply_to(m, "❌ Topic likho\nExample: <code>/wiki usa</code>")
         return
 
-    query = query.title()  # usa → Usa
-    res = wiki(query)
+    res = wiki(query.title())
     bot.reply_to(m, safe_text(res))
 
 
 # ======================
-# MEDIA HANDLER
+# MEDIA
 # ======================
 @bot.message_handler(func=lambda m: "http" in m.text)
 def media_cmd(m):
@@ -76,12 +76,12 @@ def fallback(m):
         "❓ Samajh nahi aaya\n\n"
         "Use:\n"
         "📘 /wiki topic\n"
-        "🎬 koi media link"
+        "🎬 media link"
     )
 
 
 # ======================
-# START BOT
+# RUN
 # ======================
-print("🤖 Bot started...")
+print("🤖 Bot started")
 bot.infinity_polling(skip_pending=True)
