@@ -1,0 +1,19 @@
+{
+  "name": "Indiayz Telegram Bot",
+  "description": "Telegram bot powered by indiayz Python SDK (Wiki + Media Downloader)",
+  "repository": "https://github.com/indiayz/indiayz-telegram-bot",
+  "keywords": ["telegram", "bot", "indiayz", "ai", "wiki", "media"],
+  "env": {
+    "BOT_TOKEN": {
+      "description": "Telegram Bot Token from @BotFather",
+      "required": true
+    }
+  },
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "stack": "heroku-22"
+}
